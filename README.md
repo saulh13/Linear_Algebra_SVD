@@ -14,22 +14,48 @@ This repository contains all assignments, projects, the midterm, and the final e
 
 The course explored real-world applications of Linear Algebra, including:
 
+
 Data Analysis: Using matrix decompositions to analyze and interpret datasets.
+
+
+
 Machine Learning: Applying dimensionality reduction techniques for improved model efficiency.
+
+
+
 Image Compression: Reducing image size using SVD without significant loss of quality.
+
+
+
 Mathematical Concepts: Eigenvalues, eigenvectors, matrix transformations, and numerical methods.
 
 **Assignments:**
 
 
 Exercises covering key mathematical and programming concepts such as:
+
+
 Matrix decomposition, eigenvalues, eigenvectors
+
+
 Data analysis using R
+
+
 Data transformations and SVD applications
+
+
 📝 Midterm & Final Exam: Comprehensive tests covering theoretical and applied topics in Linear Algebra.
+
+
 📊 Final Project (Image Compression):
+
+
 Applied SVD for image compression.
+
+
 Reconstructed compressed images from reduced matrices.
+
+
 Created visualizations to compare original vs. compressed images.
 
 **Key Concepts Covered**
@@ -37,12 +63,27 @@ Created visualizations to compare original vs. compressed images.
 
 
 Linear Algebra Foundations:
+
+
 Matrix Operations
+
+
 Eigenvalues & Eigenvectors
+
+
 Matrix Decompositions (SVD)
-Applications:
+
+
+
+_Applications:_
 Image Processing & Compression
+
+
+
+
 Machine Learning & Dimensionality Reduction
+
+
 Data Analysis & Visualization
 
 **Acknowledgments**
