@@ -76,6 +76,8 @@ Matrix Decompositions (SVD)
 
 
 _Applications:_
+
+
 Image Processing & Compression
 
 
