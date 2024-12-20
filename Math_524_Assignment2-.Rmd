@@ -1,0 +1,445 @@
+---
+title: "Math_524_Assignment2"
+author: "Saul Hernandez"
+date: "2024-10-22"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**P1) SVD Results:**
+
+```{r}
+A = matrix (c(1 ,-1,1,1) , nrow =2)
+svd_ = svd(A)
+svd_
+```
+
+We compute $UDV^T$ by hand,
+
+$$
+\begin{aligned}
+U =& \begin{bmatrix}-0.7071068 & 0.7071068 \\ 0.7071068 & 0.7071068 \end{bmatrix} \\
+D =& \begin{bmatrix}1.414214 & 0 \\ 0 & 1.414214\end{bmatrix} \\
+V =& \begin{bmatrix}-1 & 0 \\ 0 & 1\end{bmatrix} = V^T
+\end{aligned}
+$$
+
+Thus we write
+
+$$
+\begin{aligned}
+UDV^T =& \begin{bmatrix}-0.7071068 & 0.7071068 \\ 0.7071068 & 0.7071068 \end{bmatrix} \begin{bmatrix}1.414214 & 0 \\ 0 & 1.414214\end{bmatrix}\begin{bmatrix}-1 & 0 \\ 0 & 1\end{bmatrix} \\ 
+=&  \begin{bmatrix}(-0.7071068 \times 1.414214) + 0  & 0 + (0.7071068 \times 1.414214) \\ (0.7071068 \times 1.414214) + 0 & 0 + (0.7071068 \times 1.414214) \end{bmatrix} \begin{bmatrix}-1 & 0 \\ 0 & 1\end{bmatrix}\\
+=& \begin{bmatrix}-1 & 1 \\ 1 & 1\end{bmatrix} \begin{bmatrix}-1 & 0 \\ 0 & 1\end{bmatrix} \\
+=& \begin{bmatrix}1 & 1 \\ -1 & 1\end{bmatrix} = A
+\end{aligned}
+$$
+
+As desired $\blacksquare$
+
+**P2) Find SVD matrices** We use R to find $U, D, V$ matrices of $A = \begin{bmatrix}1&2&3&4&5 \\ 6&7&8&9&10\\11&12&13&14&15\end{bmatrix} \\$
+
+```{r}
+A = matrix(c(1,6,11,
+             2,7,12,
+             3,8,13,
+             4,9,14,
+             5,10,15), nrow = 3)
+A
+```
+
+```{r}
+svd_ = svd(A)
+U = svd_$u
+V = svd_$v
+D = diag(svd_$d)
+```
+
+```{r}
+print("U = ") 
+U
+```
+
+```{r}
+print("D = ") 
+D
+```
+
+```{r}
+print("V = ") 
+V
+```
+
+**P3) Use first singular values to approximate data matrix A**
+
+Data matrix $A$ using $B = d_1u_1v^t_1$
+
+```{r}
+# Extract the first singular value and vectors
+d1 = svd_$d[1]
+u1 = U[, 1]
+v1 = V[, 1]
+
+# Reconstruct the matrix B using
+B = d1 * (u1 %*% t(v1))
+B
+```
+
+To approximate the matrix $A$, we use the first SVD component $B=d_1u_1v_1^t$, where $d_1$is the largest singular value, and $u_1$​ and $v_1$​ are the first left and right singular vectors. This approximation captures the largest variation in the data. If $d_1$ is significantly larger than others, $B$ will provide a good approximation of $A$, if not, we need more singular vectors for a better approximation.
+
+**P4) Eigenvalues/Eigenvectors/SVD**
+
+$$
+A = \begin{bmatrix}
+1.2 & −0.5 & 0.9 & -0.6 \\
+1.0 &−0.7& −0.4 &0.9 \\
+−0.2& 1.1 &1.6 &−0.4 \\
+\end{bmatrix}
+$$
+
+**a)** Finding Eigenvectors and Eigenvalues of $AA^T$
+
+```{r}
+#Matrix A
+A = matrix(c(1.2,1.0,-0.2,
+             -0.5,-0.7,1.1,
+             0.9,-0.4,1.6,
+             -0.6,0.9,-0.4), nrow = 3)
+#AA^t
+AAT = A%*%t(A)
+#Find and extract evals/evecs
+eigen_ = eigen(AAT)
+evals = eigen_$values
+evecs = eigen_$vectors
+```
+
+```{r}
+#Print Values
+evals
+evecs
+```
+
+**b)** Finding Eigenvectors and Eigenvalues of $A^TA$
+
+```{r}
+#A^tA
+ATA = t(A)%*%A
+#Find and extract evals/evecs
+eigen2_ = eigen(ATA)
+evals2 = eigen2_$values
+evecs2 = eigen2_$vectors
+```
+
+```{r}
+#Print Values
+evals2
+evecs2
+```
+
+**c)** SVD of $A$
+
+```{r}
+svd_A = svd(A)
+svd_A
+```
+
+**e)** Compare the singular vectors and singular values eigenvalues and eigenvectors computed
+
+We see that the singular values obtained from the SVD are are the square roots of the eigenvalues of $A^TA$ and $AA^T$. This means that the singular values represent the magnitude of the data along the components. $$
+\sqrt{\lambda_i} = d_i, \text{for} \space (i = 1,2,3 )
+$$ We see that the left singular vectors $U$ from the SVD correspond to the eigenvectors of $AA ^T$, while the right singular vectors $V$ correspond to the eigenvectors of $A^TA$. Comparing eigenvectors and singular vectors shows how the data is spread out in simpler terms. Eigenvectors point to where the data changes the most, and singular values show how much those directions matter. If the singular values are big, the data can be described well using fewer directions.
+
+**f)** Orthonormal Column Vectors
+
+```{r}
+#Extract Values
+U_1 = svd_A$u
+V_1 = svd_A$v
+
+# Check orthonormality for U
+U_orthono = t(U_1) %*% U_1
+round(U_orthono)
+
+# Check orthonormality for V
+V_orthono = t(V_1) %*% V_1
+round(V_orthono)
+```
+
+Yes, the column vectors of U and V in the SVD of Step (c) are orthonormal to each other.
+
+**P5)** $C = AA^T$ and $A$ is any real-valued rectangular matrix **a)** We can set up $A$ using its SVD representation as such, $$
+A = UDV^T 
+$$ Thus we can write, $$
+\begin{aligned}
+C = AA^T =& (UDV^T)(UDV^T)^T \\
+=& (UDV^T)(VD^TU^T) \\
+=&UDV^TVD^TU^T \\
+=& UDD^TU^T , \hspace{10 mm}(V^TV = I) \\
+=& UDD^TU^T
+\end{aligned}
+$$
+
+$DD^T$is an $m×m$ diagonal matrix with entries $\lambda_1^2, \lambda_2^2, \dots \lambda_m^2$ (the squares of the singular values of $A$) along the diagonal, with remaining entries as zero. Since $U$ is orthogonal, the eigenvalues of $C$ are the same as those of $DD^T$, which are $\lambda_1^2, \lambda_2^2, \dots \lambda_m^2$. Thus each $\lambda_i^2 \geq 0$. Hence all the eigenvalues of $C$ are non-negative.
+
+**b)** Assume that $u$ is an eigenvector of $C=AA^T$ with eigenvalue $\lambda$. So
+
+$$
+Cu = AA^Tu = \lambda u
+$$
+
+Let $v = A^Tu$, Thus we can multiply by $A^T$ to get
+
+$$
+\begin{aligned}
+A^T(AA^Tu) =& A^T \lambda u \\
+(A^TA) (A^Tu) =& A^T\lambda u
+\end{aligned}
+$$
+
+Since $v=A^Tu$,
+
+$$
+\begin{aligned}
+A^TA v =& \lambda v \\
+C^T v =& \lambda v
+\end{aligned}
+$$
+
+Thus $v$ is an eigenvector of $C^T = A^TA$.
+
+**P6)** Polynomial of matrix expression
+
+$$
+A = \begin{bmatrix}2&-1\\-1&3\end{bmatrix}, \hspace{5 mm} x = \begin{bmatrix}x_1\\x_2\end{bmatrix}
+$$
+
+For $P(x_1,x_2) = x^T AA^Tx$
+
+**pf:** First we find $AA^T$ as such,
+
+$$
+\begin{aligned}
+AA^T =& \begin{bmatrix}2&-1\\-1&3\end{bmatrix}\begin{bmatrix}2&-1\\-1&3\end{bmatrix} \\
+=& \begin{bmatrix}5&-5\\-5&10\end{bmatrix}
+\end{aligned}
+$$
+
+Thus we can write\
+
+$$
+P(x_1,x_2) = \begin{bmatrix}x_1&x_2\end{bmatrix} \begin{bmatrix}5&-5\\-5&10\end{bmatrix} \begin{bmatrix}x_1\\x_2\end{bmatrix}
+$$
+
+Now we have
+
+$$
+\begin{aligned}
+P(x_1,x_2) =& 5x_1(x_1 - x_2) -5x_2(x_1-2x_2) \\
+=& 5x_1^2 - 10x_1x_2 + 10x_2^2 
+\end{aligned}
+$$
+
+Therefore the second order polynomial is
+
+$$
+P(x_1,x_2)= 5x_1^2 - 10x_1x_2 + 10x_2^2 
+$$
+
+**P7)**
+
+$\text{Given } A = \begin{bmatrix} 2 & -1 \\ -1 & 3 \end{bmatrix} \text{ and the polynomial }$
+
+$$
+P(x_1, x_2) = x^T A A^T x = 5x_1^2 - 10x_1 x_2 + 10x_2^2
+$$
+
+$\text{We want to maximize } P(x_1, x_2) \text{ subject to the constraint } x_1^2 + x_2^2 = 1, \text{Thus we express } x_2 \text{ as: }$
+
+$$
+x_2 = \sqrt{1 - x_1^2}.
+$$
+
+Now:
+
+$$
+\begin{aligned}
+P(x_1) =& 5x_1^2 - 10x_1 \sqrt{1 - x_1^2} + 10(1 - x_1^2) \\
+=& -5x_1^2 - 10x_1 \sqrt{1 - x_1^2} + 10
+\end{aligned}
+$$
+
+$\text{Differentiating } P(x_1) \text{ with respect to } x_1:$
+
+$$
+\frac{dP}{dx_1} = -10x_1 - 10 \left( \frac{1 - 2x_1^2}{\sqrt{1 - x_1^2}} \right).
+$$
+
+Setting the derivative to zero to find the maximum:
+
+$$
+-10x_1 - 10 \left( \frac{1 - 2x_1^2}{\sqrt{1 - x_1^2}} \right) = 0
+$$ ,
+
+which simplifies to:
+
+$$
+x_1 + \frac{1 - 2x_1^2}{\sqrt{1 - x_1^2}} = 0
+$$
+
+$$ 
+\text{Squaring both sides: } (1 - 2x_1^2)^2 = x_1^2(1 - x_1^2) \\
+\text{This leads to the quadratic: } 5x_1^4 - 5x_1^2 + 1 = 0. \\
+\text{Letting} ( y = x_1^2 ): y = \frac{5 \pm \sqrt{5}}{10}.
+$$
+
+$\text{Evaluate } P(x_1, x_2) \text{ for each case:}$
+
+For $x_1^2 = \frac{5 + \sqrt{5}}{10}$ :
+
+$$
+x_2^2 = \frac{5 - \sqrt{5}}{10}.
+$$
+
+For $x_1^2 = \frac{5 - \sqrt{5}}{10}$:
+
+$$
+x_2^2 = \frac{5 + \sqrt{5}}{10}.
+$$
+
+$\text{The maximum value of } P(x_1, x_2) \text{ corresponds to the largest eigenvalue of } A A^T.$
+
+**P8) Image Analysis (Grayscale Picture)**
+
+```{r}
+#Set Directory & Extract Image
+setwd("/Users/saulhernandez/Desktop/LinAlg")
+library(imager)
+dat = load.image('929292AA-6C58-4FD4-86D5-201A01DFD56B.JPG')
+#Get Dimensions
+dim(dat)
+```
+
+```{r}
+graydat = grayscale(dat)  # Convert to grayscale
+# Display the first three rows and first five columns
+dim(graydat)  # Check dimensions
+graydat[1:3, 1:5, 1, 1]
+```
+
+```{r}
+#Plot the Grayscale
+plot(graydat, xlim = c(0, 1284), ylim = c(0, 2282), main = 'B/W Saul & Paola')
+```
+
+**P9) SVD Analysis of Previous Image**
+
+```{r}
+#SVD analysis of the grayscale data
+svdDat = svd(graydat)
+SVDd = svdDat$d
+percentD = 100*(SVDd^2)/sum(SVDd^2)
+cumpercentD = cumsum(percentD) 
+```
+
+```{r}
+#Scree Plot for the First 30 Singular Values
+modeK = 1:length(SVDd)
+plot(modeK[1:30], percentD[1:30], 
+     type = 'o', col = 'blue',
+     xlab = 'Mode number', pch = 16,
+     ylab = 'Percentage of mode variance',
+     main = 'Scree Plot of SVD B/W Photo Data')
+```
+
+```{r}
+#Reconstruct the Grayscale Data Using the First 30 Modes:
+
+# Extract U, D, and V from SVD
+U = svdDat$u
+D = diag(svdDat$d)
+V = svdDat$v
+
+# Reconstruct using all the modes
+recon = U %*% D %*% t(V)  # Matrix multiplication
+dim(recon)
+
+par(mfrow = c(1, 1))
+
+# Reconstruction using the first 30 modes
+k = 30
+R30 = as.cimg(U[, 1:k] %*% D[1:k, 1:k] %*% t(V[, 1:k]))
+plot(R30, main = "Reconstructed Image Using the First 30 Modes")
+```
+
+```{r}
+#Plot Them Together 
+par(mfrow = c(2, 2))
+plot(graydat, main = "Original")
+#The first 30 modes
+plot(R30, main = "The first 30 modes")
+```
+
+**P10) Theorem 1.1 Proof**
+
+**Proof:**
+
+We begin with the SVD of a data matrix $A$;
+
+$$
+A = UDV^T
+$$
+
+and the corresponding covariance matrix of $A$ is
+
+$$
+C = \frac{1}{Y}AA^T = \frac{1}{Y}(UDV^T)(UDV^T)
+$$
+
+we use property $V^TV = I_Y$for
+
+$$
+\begin{aligned}
+AA^T &= (UDV^T)(UDV^T)\\
+&= UDV^TVD^TU^T \\
+&= UDD^TU^T
+\end{aligned}
+$$
+
+So we have
+
+$$
+\begin{aligned}
+C &= \frac{1}{Y}AA^T \\
+&= \frac{1}{Y}UDD^TU^T \\
+&= \frac{1}{Y}UD^2U^T
+\end{aligned}
+$$
+
+Since $DD^T$ is a diagonal matrix whose diagonal elements are the squares of values $d_k$ (i.e $DD^T = diag(d_1^2, d_2^2,\dots,d_k^2)$ )
+
+Now we set up the covariance matrix to the eigenvalue equation $CU = U\Lambda$, where $\Lambda$ is the diagonal matrix of eigenvalues, to find the eigenvalues and eigenvectors;
+
+$$
+\begin{aligned}
+CU &= \frac{1}{Y}UD^2U^TU \\
+&= \frac{1}{Y}UD^2 \\
+&= U\Lambda
+\end{aligned}
+$$
+
+since $U^TU = I_Y$, and as $Cu_k = \lambda_k u_k$ for $(k=1,2,\dots,Y)$. Which leads to the eigenvalue matrix
+
+$$
+\Lambda = \frac{1}{Y}D^2
+$$
+
+where the diagonal elements (eigenvalues) are
+
+$$
+\lambda_k = \frac{d_k^2}{Y} , (k = 1,2,\dots,Y)
+$$ This shows that the eigenvectors of the covariance matrix $C$ are the same as the columns of $U$ in the SVD of the space-time data matrix $A$. As well as the eigenvalues are the same as the squares of the singular values from the SVD of $A$.

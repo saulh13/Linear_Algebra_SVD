@@ -1,0 +1,270 @@
+---
+output:
+  pdf_document:
+    latex_engine: xelatex
+    number_sections: true
+    keep_tex: true
+fontsize: 6pt
+font: Times New Roman
+header-includes:
+  - \usepackage{setspace}
+  - \doublespacing
+---
+
+\thispagestyle{empty}
+
+```{=tex}
+\begin{center}
+    \vspace*{2in}
+    {\Huge \bfseries SVD Compression}\\[1.5em]  % Title of the report
+    {\Large Saul Hernandez}\\[1em]% Author's name
+    \vfill
+    \textit{Affiliation: Comprezzed inc. }\\  % Affiliation
+    \textit{Email: saul@email.com}\\  % Email
+    \textit{Phone: (123) 456-7890}\\  % Phone number
+    \textit{Website: www.sdsu.edu}\\[1em]
+    \vspace{0.5in}
+    {\Large December 7, 2024}  % Date
+\end{center}
+\newpage
+```
+# Abstract
+
+As data continues to grow rapidly, large images can get harder to store and send because of their size. This research will focus on the application of Singular Value Decomposition (SVD) for image compression using R. Our goal is to simplify the data of the image while keeping the important details in order to have more efficient storage and transmission (storing & sending). SVD is applied to an image where the decomposition is used to break down the image, and only the important or more significant parts are kept to reduce the size of the image. The effectiveness of the compression is measured by comparing all images; the original, compressed, and reconstructed. As well as assessing how the change in rank affects the quality of the decompression. Additionally, Huffman encoding is used as an additional method for compressing the data. The results show that SVD compression can effectively reduce image size while preserving a high image quality. Showing that SVD is making it useful for applications such as data transmission and image storage.
+
+\newpage
+
+# Introduction
+
+## Problem Identification
+
+In today's modern world, we are constantly creating a huge amount of data every day, and a big portion of it comes from images/pictures -- people take pictures everyday. However, large image files can be very difficult to store and send due to them  taking up a lot of space and requiring a strong internet connection to navigate quickly. This makes it crucial to find ways to reduce the size of these files without losing too much quality and detail.
+
+## Abstraction of the Problem
+
+We focus on using Singular Value Decomposition as a method for compression of an image. SVD is a mathematical technique that breaks a matrix, in this case image data, into three components:
+
+$$
+A=UDV^T 
+$$Where $A$ is the original matrix (Data Matrix of Image), $U$ and $V^T$ are the orthogonal matrices capturing spatial information, and $D$ is a diagonal matrix containing singular values, which show the importance of different features in the image. Larger singular values mean critical image details, while smaller values add less essential elements. As only keeping the largest singular values, the image size can be reduced while preserving most of its important details.
+
+![SVD Model (from ©2018 ACURASOFT INC.)](final_project/SVD%20Model.png "SVD Model (from ©2018 ACURASOFT INC.)"){width="396"}
+
+The study targets SVD's role in compression, by decomposing an image's data into the main components and preserving only the most significant in order to reduce the size. Also, it seeks to evaluate the effectiveness as we show the reconstruction of an image and comparing the quality of the compressed and original versions. As we also analyze how varying the rank affects the results.
+
+This approach is effective because of the way the singular values show the information each part of the data holds. And by focusing on the more important details as we leave out the minor ones, we can reserve and share data more efficiently.
+
+### Relevance and Applications
+
+Efficient image compression has many applications in different areas, as such;
+
+-   **Data Storage**: Reducing device storage.
+
+-   **Data Transmission**: Enhancing the speed of transfer and delivery.
+
+-   **Machine Learning**: Providing a pre-processed and compact dataset for tasks (e.g object detection and recognition).
+
+### Huffman Encoding
+
+In addition to SVD, Huffman encoding was also useful. A compression method that works by using shorter codes to the more useful values of the image. This allows us to make the file smaller by reducing the the size and keeping the more essential details of the image. When used with SVD, Huffman encoding allows us to make the compression process more efficient and successful. The project will show that combining the methods can be useful in media storage, as we can compress data effectively using both techniques.
+
+\newpage
+
+# Data and Methodology
+
+At *Comprezzed Inc**.***, we focus on compressing an image size by effectively extracting the data and using SVD. For this project, we focused on compressing two images by combining **Singular Value Decomposition (SVD)** and **Huffman Encoding**. Extracting data with SVD and applying Huffman Encoding for compressions, we aim to show the success of this method in reducing file sizes while keeping the quality.
+
+## Data
+
+The data for this project is an image in JPEG format. The image is shown in three color channels: red, green, and blue (RGB). We used the following two images; a picture taken with a phone of beautiful Petco Park at night, and an action shot from one of our employees, Saul, playing soccer.
+
+|                                                                        |                                                           |
+|------------------------------------------------------------------------|-----------------------------------------------------------|
+| ![Saul Soccer Shot (2.4MB)](Saul_Soccer.JPG){width="160" height="231"} | ![Petco Park Picture (1.2MB)](PetcoPark.jpg){width="176"} |
+
+We see that the action shot has the size of 2.4MB, while the picture of Petco Park is 1.2MB. We take the data from each image, perform SVD on that matrix, process the image and we get our results. We use R to process the images using libraries. The preprocessing step makes sure that the data is formatted in the correct way for SVD compression and Huffman Encoding.
+
+## Methodology
+
+As mentioned, our method was mainly contained by the two steps, SVD Compression and Huffman Encoding. While each step contributes differently. Where SVD is applied to mathematically reduce the size of the dimension of the image and the Huffman is used for the lossless compression.
+
+#### SVD Compression
+
+As mentioned previously, SVD Separated the data into three matrices; U (spatial pattern matrix), D singular values/diagonal matrix) and V (temporal matrix).  It is performed by each color (RGB) being separated by SVD and only top values being kept while others are discarded. Then we recreate the channels with the new shorter data.
+
+#### Huffman Coding
+
+After SVD, the compressed image data is made into an array of pixels where the **Huffman Encoding** is then done to achieve the compression. It begins by generating a frequency table, then building a Huffman tree, and thus encoding. Lastky we perform **Huffman Decoding** and reconstruct the SVD-compressed image.
+
+#### **Tools and Libraries**
+
+-   **R**: Programming language used for image processing and computations.
+
+-   **JPEG**: R library used for reading and JPEG files.
+
+-   **imager**: Used for testing and seeing images in R.
+
+-   **Huffman Algorithm**: Built R code to encode and decode image data.
+
+# Results
+
+The results of this project highlight that after applying the SVD and Huffman. We get our SVD dataset matrix by simply using R command `svd_res <- svd(img_channel)` . Which is how we extract our $U$ , $D$ , and $V^T$ of the images' data set matrix $A$ (`img_channel)` . Additionally, from using SVD to reconstruct the image, the Huffman Tree is useful for a form of lossless data compression. Which will reduce the amount of data storage the image takes up.
+
+We show the following code:
+
+``` r
+# Function to perform SVD compression on each channel
+apply_svd_compression <- function(image, rank) {
+  # Set up plotting area (2 rows, 3 columns for potential extra plots)
+  par(mfrow = c(2, 3))
+  
+  # Colors and labels for each channel
+  channel_colors <- c("red", "green", "blue")
+  channel_labels <- c("Red", "Green", "Blue")
+  
+  compressed <- array(0, dim = dim(image))
+  for (channel in 1:dim(image)[3]) {
+    img_channel <- image[, , channel]
+    svd_res <- svd(img_channel)
+    # Retain only the top 'rank' singular values
+    u <- svd_res$u[, 1:rank]
+    d <- diag(svd_res$d[1:rank])
+    v <- svd_res$v[, 1:rank]
+    
+    # Showing SVD data while we have it here!
+    SVDd <- svd_res$d
+    percentD <- 100 * (SVDd^2) / sum(SVDd^2)
+    modeK <- 1:length(SVDd)
+    plot(
+      modeK, percentD, 
+      type = 'o', col = channel_colors[channel],  # Use the channel color
+      xlab = 'Mode number', pch = 8, 
+      ylab = 'log scale variance', 
+      main = paste('SVD Scree -', channel_labels[channel]),  # Label the channel
+      log = 'y'
+    )
+    
+    # Reconstruct compressed channel
+    compressed[, , channel] <- u %*% d %*% t(v)
+  }
+  return(compressed)
+}
+
+# Function to flatten and format SVD compressed data
+format_svd_data <- function(compressed_image) {
+  return(as.vector(round(compressed_image * 255)))  # Scale to 0-255 for Huffman
+}
+
+# Function to reconstruct image from Huffman-decoded data
+reconstruct_svd_image <- function(flat_data, original_dim, rank) {
+  # Reshape flat data into image dimensions
+  compressed_image <- array(flat_data / 255, dim = original_dim)  # Rescale to original
+  reconstructed <- array(0, dim = original_dim)
+  for (channel in 1:original_dim[3]) {
+    img_channel <- compressed_image[, , channel]
+    svd_res <- svd(img_channel)
+    u <- svd_res$u[, 1:rank]
+    d <- diag(svd_res$d[1:rank])
+    v <- svd_res$v[, 1:rank]
+    reconstructed[, , channel] <- u %*% d %*% t(v)
+  }
+  return(reconstructed)
+}
+
+# Main function to perform SVD compression and Huffman encoding
+huffman_svd_encode_decode_rgb <- function(image_path, output_file, svd_rank) {
+  # Read the image
+  img <- readJPEG(image_path)
+  
+  # Apply SVD compression
+  compressed_img <- apply_svd_compression(img, svd_rank)
+  
+  # Flatten compressed data for Huffman encoding
+  flat_data <- format_svd_data(compressed_img)
+  
+  # Generate the frequency table
+  freq_table <- generate_frequency_table(flat_data)
+  
+  # Build the Huffman tree
+  huffman_tree <- build_huffman_tree(freq_table)
+  
+  # Generate Huffman codes
+  huffman_codes <- generate_huffman_codes(huffman_tree)
+  
+  # Encode the compressed image data
+  encoded_bits <- encode_image(flat_data, huffman_codes)
+  
+  # Save the encoded bits to a file
+  writeLines(encoded_bits, output_file)
+  
+  # Decode the encoded bits back to data
+  decoded_bits <- decode_image(encoded_bits, huffman_tree, length(flat_data))
+  decoded_data <- as.numeric(decoded_bits)
+  
+  # Reconstruct the SVD-compressed image
+  decoded_img <- reconstruct_svd_image(decoded_data, dim(img), svd_rank)
+  
+  # Return the original, compressed, and decoded images
+  return(list(original = img, compressed = compressed_img, decoded = decoded_img))
+}
+
+# Run the function with SVD compression (adjust SVD rank as needed)
+output_file <- "/Users/saulhernandez/Desktop/LinAlg/final_project/results/encoded_image_svd.txt"
+svd_rank <- 50  # Adjust rank for desired compression level
+result <- huffman_svd_encode_decode_rgb("/Users/saulhernandez/Desktop/LinAlg/Saul_Soccer.jpg", output_file, svd_rank)
+
+# Compare original, compressed, and decoded images
+original_image <- result$original
+compressed_image <- result$compressed
+decoded_image <- result$decoded
+
+# Convert images into imager objects
+original_imager <- as.cimg(rotate(original_image))
+compressed_imager <- as.cimg(rotate(compressed_image))
+decoded_imager <- as.cimg(rotate(decoded_image))
+
+# Display the images side-by-side
+plot(original_imager, main = "Original Image")   # Plot original image
+plot(compressed_imager, main = "Compressed Image (SVD)")  # Plot compressed image
+plot(decoded_imager, main = "Decoded Image")     # Plot decoded image
+```
+
+Giving us the following:
+
+![Petco Park Results](final_project/results/game_combined.png){width="517"}
+
+![Saul Soccer Shot Results](final_project/results/soccer_combined.png){width="519"}
+
+The images show the SVD and Huffman coding. SVD breaks down the data, where $D$ contains singular values. These singular values indicate the contribution of each mode to the reconstruction of the image. For this project, you can see that we only used the top 50 singular values that were retained during compression so we can balance the reduction of the data while keeping the quality of the image. The top graphs show the RGB color channels of the image. We see the comparisons side by side as we show the Original image, Compressed, and the Decoded.
+
+The following table summarizes our results;
+
+|                 | Soccer Shot | Petco Park |
+|-----------------|-------------|------------|
+| Original Size   | 2.4MB       | 1.2MB      |
+| Compressed Size | 1.44MB      | 0.7MB      |
+| Decoded Size    | 1.2MB       | 0.5MB      |
+
+: Results from After Compressions
+
+As shown by the graphs, images, and the table, we can see the reduction of image quality as well as size. By the scree plots for each RGB channel, we see the decay of the singular values (focusing on main modes). By keeping only the top 50 singular values for each channel, we get a good reduction in size while keeping visually sustainable quality in the reconstruction. Even though this is focused on smaller sizes, we can see the combination of both methods is effective and can come a long way when dealing with multiple or even bigger data. Considering this, our service ensures that image quality is preserved while significantly reducing storage requirements, even though the image may lose some efficiency. By using SVD and coding, we can find an optimal balance between image compression and quality. As our goal is to give the most optimal quality with minimal data storage.
+
+# Conclusion and Discussion
+
+This project shows that by combining SVD extracts/constructs with Huffman Coding, data can be effectively compressed into smaller data sizes while maintaining quality. SVD works by extracting the three most important parts of an image and reconstructing an image from those isolated components. Huffman Encoding is used as a lossless compression technique that is then applied to reduce the image size further without losing any details. The results show that this approach not only reduces storage size but also keeps the image quality at a high resolution. This makes it easier for applications where efficient storage and image clarity are important. For example, medical imaging or large-scale image storage systems that require large amounts of storage and detail.
+
+Alternative to SVD, techniques such as Principal Component Analysis (PCA) and Wavelet Transform can be used. However, PCA also focuses on reducing dimensions and compressing data while SVD offers a better balance in the quality of compression. On the other hand, Wavelet Transform compresses the image by using frequency domain representations. however, SVD is less complex and uses less extensive computations.
+
+Finally, this compression method can be enhanced by including more advanced topics other than images. For example, machine learning algorithms can incorporate the compression level based on the image content. This allows for adjustments that give a good image quality as well as efficient storage. This combination of techniques offers a balance between image quality and storage size, making it a practical option for applications.
+
+\newpage
+
+# References
+
+1.  Rahman, Md. A., & Hamada, M. (2019, October 11). *Lossless image compression techniques: A state-of-the-art survey*. MDPI. <https://www.mdpi.com/2073-8994/11/10/1274>
+
+2.  Acurasoft Inc. (2018, February 11) *SVD:* Linear Algebra, Multivariate Analysis. <https://acurasoft.com/svd/>
+
+3.  Baumann, T. (n.d.). *Image compression with singular value decomposition*. SVD-Demo: Image Compression. <https://timbaumann.info/svd-image-compression-demo/>
+
+# Peer Review

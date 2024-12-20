@@ -1,0 +1,387 @@
+---
+title: "Math_524_Assignment1"
+author: "Saul Hernandez"
+date: "2024-09-28"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assignment 1
+
+**1.1 SVD Results**
+
+We know that $A=UDV^T$ and we are given that;
+
+$A= \begin{bmatrix}1&1\\1&-1 \end{bmatrix}$, $U = \begin{bmatrix} -0.7071068 & -0.7071068\\ -0.7071068& 0.7071068 \end{bmatrix}$, $D = \begin{bmatrix}1.414214 & 0 \\0 & 1.414214\end{bmatrix}$, $V = \begin{bmatrix}-1&0\\1&-1 \end{bmatrix}$
+
+We compute,
+
+$$
+\begin{aligned}
+UD &= \begin{bmatrix} -0.7071068 & -0.7071068\\ -0.7071068& 0.7071068 \end{bmatrix}\begin{bmatrix}1.414214 & 0 \\0 & 1.414214\end{bmatrix} \\
+& = \begin{bmatrix} {-0.7071068 \cdot 1.414214 } & -0.7071068 \cdot 1.414214\\ -0.7071068 \cdot 1.414214 & 0.7071068 \cdot 1.414214 \end{bmatrix} \\
+&= \begin{bmatrix}-1&-1\\-1&1 \end{bmatrix}
+\end{aligned}
+$$ Now we find $(UD)V^T$ as $V^T = V$, we have,
+
+$$
+UDV^T = \begin{bmatrix}-1&-1\\-1&1 \end{bmatrix}\begin{bmatrix}-1&0\\0&-1 \end{bmatrix} = \begin{bmatrix}(-1)(-1) + (-1)(0) & (-1)(0)+(-1)(-1)\\(-1)(-1) + (1)(0) & (-1)(0)+(1)(-1) \end{bmatrix} = \begin{bmatrix}1&1\\1&-1 \end{bmatrix}
+$$
+
+Thus,
+
+$$
+A = \begin{bmatrix}1&1\\1&-1 \end{bmatrix} =  UDV^T 
+$$ As desired $\blacksquare$
+
+**1.2 EOF's and PC's**
+
+```{r, 1.2}
+library(ggplot2)
+
+setwd("/Users/saulhernandez/Desktop/LinAlg")
+darwin_dat = read.table("data/PSTANDdarwin.txt", header = TRUE)
+tahiti_dat = read.table("data/PSTANDtahiti.txt", header = TRUE)
+
+head(darwin_dat)
+head(tahiti_dat)
+
+#Check dim. & combine
+dim(darwin_dat)
+dim(tahiti_dat)
+comb_dat = cbind(darwin_dat, tahiti_dat)
+
+#SVD
+dat_centered = scale(comb_dat)
+svd = svd(dat_centered)
+
+# EOFs/PCs
+EOFs = svd$u
+PCs = svd$d %*% t(svd$v)
+```
+
+**1.8 Covariance Matrix; Annual Precipitation**
+
+**(a)** Covariance $N \times N$ matrix choosing an $X$ data matrix from the USHCN annual total precipitation data at three California stations from north to south. $C = X \cdot X^T / Y$ with $N=3$ $Y=5$
+
+```{r, 1.8}
+setwd('/Users/saulhernandez/Desktop/LinAlg')
+dat = read.csv('CAprcpV2.csv', header = TRUE)
+stations =  c('USW00023188', 'USC00047902', 'USW00023234')
+years = 2001:2005
+
+filter_dat = subset(dat, STATION %in% stations & DATE %in% years)
+prcp_data = filter_dat$PRCP
+SDprc = filter_dat$PRCP[filter_dat$STATION == 'USW00023188']
+SBprc = filter_dat$PRCP[filter_dat$STATION == 'USC00047902']
+SFprc = filter_dat$PRCP[filter_dat$STATION == 'USW00023234']
+
+
+```
+
+```{r}
+#anomaly_mat = rbind(SDprc, SBprc, SFprc)
+#rownames(anomaly_mat) =
+```
+
+```{r}
+#M = colMeans(anomaly_mat)
+#A = sweep(anomaly_mat, 2, M)
+#A
+```
+
+```{r}
+#covm = cov(A)
+#covm
+```
+
+```{r}
+#invA = solve (covm)
+#eige = eigen(covm)
+#V = eige$vectors
+#L = eige$values
+
+#SVD = svd(covm)
+```
+
+**1.10 Balancing Chemical Reaction Equation**
+
+We can balance the chemical equation $$
+\begin{aligned}
+{C_{3}H_{8} + O_{2} \rightarrow H_{2}O + CO_{2}}
+\end{aligned}
+$$ by setting up the system of equations by representing $x_1,x_2,x_3,x_4$ as variables; $$
+\begin{aligned}
+{x_{1}C_{3}H_{8} + x_{2}O_{2} \rightarrow x_{3}H_{2}O + x_{4}CO_{2}}
+\end{aligned}
+$$ We see that $$
+\begin{aligned}
+& C: 3x_1 = x_4 \\
+& H: 8x_1 = 2x_3 \\
+& O: 2x_2 = 2x_4 + x_3
+\end{aligned}
+$$ Thus since there are more variables than equations, there are infinitely many solutions. We can set any fixed variable, and express the rest using that variable as such,
+
+$$
+\begin{aligned}
+x_4 &= 3x_1 \\
+x_3 &= 4x_1 \\
+x_2 &= 3x_1 + 2x_1 \\
+&= 5x_1
+\end{aligned}
+$$ Thus we the chemical equation is $$
+\begin{aligned}
+{x_{1}C_{3}H_{8} + 5x_{1}O_{2} \rightarrow 4x_{1}H_{2}O + 3x_{1}CO_{2}}
+\end{aligned}
+$$ Thus the balanced chemical reaction is $$
+\begin{aligned}
+C_{3}H_{8} + 5O_{2} \rightarrow 4H_{2}O + 3CO_{2}
+\end{aligned}
+$$ As desired. $\blacksquare$
+
+**2.1 Generate Space-Time Matrix**
+
+We can generate a Space-Time Matrix using R as such,
+
+```{r,2.1}
+setwd("/Users/saulhernandez/Desktop/LinALg")
+dat = read.csv("data/NOAAGlobalT.csv", header = TRUE)
+#get dimensions
+dim(dat)
+```
+
+```{r}
+dat[1:3, 1:4] #Deleting Rows/Col
+```
+
+```{r}
+datSD = dat[1777,]
+datSD[1444:1551]
+```
+
+```{r}
+#December
+Decind = seq(15, 103, 12)
+Decind
+```
+
+```{r}
+DecSD = datSD[Decind]
+row.names(DecSD) = c('San Diego Box')
+colnames(DecSD) = 2001:2008
+DecSD
+```
+
+```{r}
+data.frame(DecSD)
+```
+
+```{r,2.1.1}
+#Another way to try
+#SDMat = matrix(datSD[1444:1551], ncol = 12, byrow = TRUE)
+#SDMat
+#dim(SDMat)
+#SDdec = SDMat[,12]
+#as.numeric(SDdec)
+```
+
+**2.2 Inverse of a matrix** $A = \begin{bmatrix}1.7 & -0.7 & 1.3 \\ -1.6 & -1.4 & 0.4 \\ -1.5 & -0.3 & 0.6 \end{bmatrix}$
+
+```{r,2.2}
+A = matrix(c(1.7,-1.6,-1.5,-0.7,-1.4,-0.3,1.3,0.4,0.6), nrow = 3)
+A
+
+#Solve inverse
+invA = solve (A)
+invA 
+
+#Verify
+I = invA %*% A 
+I
+```
+
+**2.3 Linear System of Equations**\
+$$
+Ax=b
+$$
+
+$$
+\begin{bmatrix}
+1&2&3\\4&5&6\\7&8&9
+\end{bmatrix} 
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\ -1 \\ 0
+\end{bmatrix}
+$$ We can use an R command to find the solution,
+
+```{r, 2.3}
+
+A = matrix(c(1, 2, 3,
+              4, 5, 6,
+              7, 8, 0), nrow = 3)
+
+b = matrix(c(1, -1, 0))
+
+# Solve for x
+x = solve(A, b)
+
+x
+```
+
+**2.4 Linear Dependency**
+
+$$
+\begin{bmatrix}
+1&2&3\\4&5&6\\7&8&9
+\end{bmatrix} 
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\ 0 \\ 0
+\end{bmatrix}
+$$
+
+**(a)** We can show that the row vectors and coefficient matrix are linearly dependent by showing there exists a linear combination; that satisfies $$
+c_1x_1 + c_2x_2 + c_3x_3 = 0 
+$$
+
+for some constants $c_1,c_2,c_3$ thus, we row reduce
+
+For $R_2 \rightarrow R_2 - 4R_1$:
+
+$$
+\begin{bmatrix}
+1&2&3 \\ 0&-3&-6 \\ 7&8&9
+\end{bmatrix}
+$$ Now for $R_3 \rightarrow R_3 - 7R_1$ $$
+\begin{bmatrix}
+1&2&3 \\ 0&-3&-6 \\ 0&-6&-12
+\end{bmatrix}
+$$ For $R_3 \rightarrow -\frac{1}{6}R_3$ $$
+\begin{bmatrix}
+1&2&3 \\ 0&-3&-6 \\ 0&1&2
+\end{bmatrix}
+$$ For $R_2 \rightarrow R_2 + 3R_3$ $$
+\begin{bmatrix}
+1&2&3 \\ 0&0&0 \\ 0&1&2
+\end{bmatrix}
+$$ And Finally, $R_2 \leftrightarrow R_3$ $$
+\begin{bmatrix}
+1&2&3 \\ 0&1&2 \\ 0&0&0 
+\end{bmatrix}
+$$ Therefore the zero row implies that the rows are not linearly indeoendent. **(b)** We can reduce the system into two equations by letting $x_3$ be an arbitrary and $x_1,x_2$ are variables;
+
+Using the row reduced matrix from **(a)**, we have the linear system, $$
+\begin{aligned}
+x_1 + 2x_2 + 3x_3 = 0 \\
+x_2 +2x_3 = 0
+\end{aligned}
+$$ Thus, $x_2=-2x_3$ and we have
+
+$$
+\begin{aligned}
+x_1 & = -2x_2 - 3x_3 \\
+& = -2(-2x_3) - 3x_3 \\
+& = 4x_3 - x_3 \\
+& = x_3
+\end{aligned}
+$$ Hence, we have $\begin{bmatrix}x_1 \\ x_2 \\ x_3\end{bmatrix}=x_3\begin{bmatrix}1 \\ -2 \\ 1\end{bmatrix}$
+
+**(c)** $$
+x_1 = x_3 \\
+x_2 = -2x3
+$$
+
+**2.5 Balancing Chemical Reaction Equation**
+
+We can balance the chemical equation $$
+\begin{aligned}
+{C_{2}H_{6} + O_{2} \rightarrow CO_{2} + H_{2}O}
+\end{aligned}
+$$ by setting up the system of equations by representing $x,y,z$ as variables; $$
+{C_{2}H_{6} + xO_{2} \rightarrow yCO_{2} + zH_{2}O}
+$$
+
+We know we have 2 Carbon and 6 Hydrogen in $C_2H_6$, Since $CO_2$ has one Carbon and $H_2O$ has $2$ Hydrogen, we can write $$
+\begin{aligned}
+2 &= y \\
+6 &= 2z\\
+z&=3
+\end{aligned}
+$$ We can find For Carbon, $x$, as such $$
+\begin{aligned}
+x &= 2y + z\\
+& = 2(2) + 3\\
+&= 7
+\end{aligned}
+$$ Thus substituting the molecules back in, the balanced equation is $$
+{2C_{2}H_{6} + 7O_{2} \rightarrow 4CO_{2} + 6H_{2}O}
+$$
+
+As desired $\blacksquare$
+
+**2.7 Eigenvectors** Show that $u = \begin{bmatrix}1\\1 \end{bmatrix}$ is not an eigenvector of $A=\begin{bmatrix}0&4\\-2&-7 \end{bmatrix}$
+
+**(a)** We can perform Matrix multiplication to show that $u$ is not an eigenvector of $A$, $$
+\begin{aligned}
+Au =& \begin{bmatrix}0&4\\-2&-7 \end{bmatrix}\begin{bmatrix}1\\1 \end{bmatrix} \\
+=& \begin{bmatrix}(0)(1)+(4)(1)\\(-2)(1)+(-7)(1) \end{bmatrix}\\
+=& \begin{bmatrix}4\\-9 \end{bmatrix} \neq \lambda u 
+\end{aligned} 
+$$ For some scalar $\lambda$. Thus $Au \neq \lambda u$. Hence $u$ is not an eigenvector of $A$ $\blacksquare$
+
+**(b)** We can use R to find the unit eigenvectors of matrix $A$
+
+```{r, 2.7}
+A = matrix(c(0,-2,4,-7), nrow = 2)
+eig = eigen(A)
+lambdas = eig$values
+Vs = eig$vectors
+lambdas
+Vs
+```
+
+We can check answers by checking if $(A-\lambda I)v = 0$ and $det(A-\lambda I) = 0$ are true,
+
+```{r}
+library(geometry)
+#check for each value in each vector
+for (i in 1:length(lambdas)) { 
+  lambda = lambdas[i]
+  v = Vs[, i] 
+}
+
+I = diag(2)
+```
+
+```{r}
+{soln = A-(lambda*I)}
+soln
+```
+
+```{r}
+ver = soln %*% v
+round(ver)
+```
+
+```{r}
+det = det(soln)
+round(det)
+```
+
+As desired $\blacksquare$
+
+\`\`\`\`
+
+\`\`\`\`
